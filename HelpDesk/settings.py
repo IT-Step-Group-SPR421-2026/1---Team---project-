@@ -126,3 +126,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # media files for uploaded images during development
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+LOGIN_URL = "/auth/login/"
+LOGIN_REDIRECT_URL = "/appeals/adminpanel/"
+LOGOUT_REDIRECT_URL = "/auth/login/"
