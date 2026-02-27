@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('Firstpage.urls')),
     path('appeals/', include('appeals.urls')),
+    path("auth/", include("appeals.auth_urls"))
 ]
 
 if settings.DEBUG:

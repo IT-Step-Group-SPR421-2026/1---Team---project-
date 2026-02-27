@@ -16,28 +16,42 @@
           <th>Category</th>
           <th>Status</th>
           <th>Created</th>
+          <th class="text-end">Actions</th>
         </tr>
       </thead>
       <tbody>
         {% for appeal in appeals %}
         <tr>
           <td class="text-secondary">{{ appeal.id }}</td>
-          <td class="fw-semibold">{{ appeal.title }}</td>
-          <td class="text-secondary">{{ appeal.get_category_display }}</td>
+
+          <td class="fw-semibold">
+            {{ appeal.title }}
+          </td>
+
+          <td class="text-secondary">
+            {{ appeal.get_category_display }}
+          </td>
+
           <td>
             <select data-url="/appeals/status/{{ appeal.pk }}/" class="form-select form-select-sm status-select">
-              {% for value,label in appeal.Status.choices %}
-                <option value="{{ value }}" {% if appeal.status == value %}selected{% endif %}>{{ label }}</option>
+              {% for value, label in appeal.Status.choices %}
+              <option value="{{ value }}" {% if appeal.status == value %}selected{% endif %}>
+                {{ label }}
+              </option>
               {% endfor %}
             </select>
           </td>
-          <td class="text-secondary">{{ appeal.created_at|date:"Y-m-d H:i" }}</td>
-          <td class="text-end">
 
-          <td class="text-secondary ">
-            <a 
-              class="btn btn-sm btn-danger rounded-pill" 
-              href="/appeals/delete/{{ appeal.pk }}/">
+          <td class="text-secondary">
+            {{ appeal.created_at|date:"Y-m-d H:i" }}
+          </td>
+
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-light rounded-pill" href="{% url 'appeals:appeal_detail' appeal.pk %}">
+              View
+            </a>
+
+            <a class="btn btn-sm btn-danger rounded-pill" href="{% url 'appeals:appeal_delete' appeal.pk %}">
               Delete
             </a>
           </td>
