@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from appeals.models import Appeal
 from appeals.forms import AppealForm
+from appeals.forms import CommentForm
 
 
 def admin_panel(request):
@@ -47,3 +48,21 @@ def appeal_status(request, pk):
             appeal.save()
         return HttpResponse(status=204)
     return redirect("/appeals/adminpanel")
+
+def appeal_detail(request, pk):
+    appeal = get_object_or_404(Appeal, pk=pk)
+
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.appeal = appeal
+            comment.save()
+            return redirect("appeal_detail", pk=appeal.pk)
+    else:
+        form = CommentForm()
+
+    return render(request, "appeals/detail.html", {
+        "appeal": appeal,
+        "form": form
+    })

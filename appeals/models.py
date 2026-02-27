@@ -31,3 +31,11 @@ class Appeal(models.Model):
 
     def __str__(self):
         return self.title
+    
+class Comment(models.Model):
+    appeal = models.ForeignKey(Appeal, on_delete=models.CASCADE, related_name="comments")
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Comment #{self.id} for Appeal #{self.appeal_id}"
