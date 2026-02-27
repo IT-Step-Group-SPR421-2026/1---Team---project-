@@ -17,7 +17,7 @@
             "dockerCompose": {
                 "files": [
                     "compose.yaml",
-                    "docker/compose.debug.yaml"  // Ось тут ми вказуємо новий шлях
+                    "docker/compose.debug.yaml"  
                 ]
             }
         }
