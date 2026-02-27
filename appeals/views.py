@@ -1,15 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from appeals.models import Appeal
 from appeals.forms import AppealForm
 from appeals.forms import CommentForm
 
-
+@login_required
 def admin_panel(request):
     appeals = Appeal.objects.all().order_by("-created_at")
     return render(request, "appeals/adminpanel.html", {"appeals": appeals})
 
-
+@login_required
 def appeal_create(request):
     if request.method == "POST":
         appeal_form = AppealForm(request.POST, request.FILES)
@@ -21,6 +22,7 @@ def appeal_create(request):
     
     return render(request, "appeals/create.html", {"form": appeal_form})
 
+@login_required
 def appeal_update(request, pk):
     appeal = get_object_or_404(Appeal, pk=pk)
     if request.method == "POST":
@@ -33,12 +35,13 @@ def appeal_update(request, pk):
     
     return render(request, "appeals/update.html", {"form": appeal_form})
 
-
+@login_required
 def appeal_delete(request, pk):
     appeal = get_object_or_404(Appeal, pk=pk)
     appeal.delete()
     return redirect("/appeals/adminpanel")
 
+@login_required
 def appeal_status(request, pk):
     appeal = get_object_or_404(Appeal, pk=pk)
     if request.method == "POST":
@@ -49,6 +52,7 @@ def appeal_status(request, pk):
         return HttpResponse(status=204)
     return redirect("/appeals/adminpanel")
 
+@login_required
 def appeal_detail(request, pk):
     appeal = get_object_or_404(Appeal, pk=pk)
 
