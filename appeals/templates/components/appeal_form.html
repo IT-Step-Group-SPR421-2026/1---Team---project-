@@ -1,16 +1,21 @@
-<form method="post" enctype="multipart/from-data">
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    
-    <div class="form-group">
-      {% for field in form %}
-        <div class="mb-3">
-            {{ field.label_tag }}
-            {{ field }}
-            {% if field.errors %}
-            <div class="invalid-feedback d-block">{{ field.errors }}</div>
-            {% endif %}    
+
+    {% for field in form %}
+    <div class="mb-3">
+        {{ field.label_tag }}
+
+        {{ field }}
+
+        {% if field.errors %}
+        <div class="invalid-feedback d-block">
+            {{ field.errors }}
         </div>
-        {% endfor %}
+        {% endif %}
     </div>
-    <button type="submit" class="btn btn-primary mt-3">{{ action }}</button>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary mt-3">
+        {{ submit_button_text|default:"Save" }}
+    </button>
 </form>
