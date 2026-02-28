@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.http import HttpResponse
 from appeals.models import Appeal
 from appeals.forms import AppealForm
@@ -72,3 +73,19 @@ def appeal_detail(request, pk):
         "appeal": appeal,
         "form": form
     })
+
+@login_required
+def admin_panel(request):
+    q = request.GET.get("q", "").strip()
+    appeals = Appeal.objects.all().order_by("-created_at")
+
+    if q:
+        appeals = appeals.filter(
+            Q(title__icontains=q) |
+            Q(description__icontains=q) |
+            Q(category__icontains=q) |
+            Q(status__icontains=q) |
+            Q(author__username__icontains=q)
+        ).distinct()
+
+    return render(request, "appeals/adminpanel.html", {"appeals": appeals, "q": q})
