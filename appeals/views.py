@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.http import HttpResponse
 from appeals.models import Appeal
 from appeals.forms import AppealForm
@@ -15,7 +16,9 @@ def appeal_create(request):
     if request.method == "POST":
         appeal_form = AppealForm(request.POST, request.FILES)
         if appeal_form.is_valid():
-            appeal_form.save()
+            appeal = appeal_form.save(commit=False)
+            appeal.author = request.user
+            appeal.save()
             return redirect("/appeals/adminpanel")
     else:
         appeal_form = AppealForm()
@@ -72,51 +75,18 @@ def appeal_detail(request, pk):
         "form": form
     })
 
-from .models import Appeal, Comment
 @login_required
-def appeal_detail(request, pk):
-    appeal = get_object_or_404(Appeal, pk=pk)
+def admin_panel(request):
+    q = request.GET.get("q", "").strip()
+    appeals = Appeal.objects.all().order_by("-created_at")
 
-    if request.method == "POST":
-        action = request.POST.get("action")
+    if q:
+        appeals = appeals.filter(
+            Q(title__icontains=q) |
+            Q(description__icontains=q) |
+            Q(category__icontains=q) |
+            Q(status__icontains=q) |
+            Q(author__username__icontains=q)
+        ).distinct()
 
-        if action == "add":
-            form = CommentForm(request.POST)
-            if form.is_valid():
-                comment = form.save(commit=False)
-                comment.appeal = appeal
-                comment.author = request.user
-                comment.save()
-                return redirect("appeals:appeal_detail", pk=appeal.pk)
-
-        elif action == "edit":
-            comment_id = request.POST.get("comment_id")
-            comment = get_object_or_404(Comment, pk=comment_id)
-            if comment.author == request.user:
-                form = CommentForm(request.POST, instance=comment)
-                if form.is_valid():
-                    form.save()
-            return redirect("appeals:appeal_detail", pk=appeal.pk)
-
-        elif action == "delete":
-            comment_id = request.POST.get("comment_id")
-            comment = get_object_or_404(Comment, pk=comment_id)
-            if comment.author == request.user:
-                comment.delete()
-            return redirect("appeals:appeal_detail", pk=appeal.pk)
-
-    else:
-        form = CommentForm()
-
-    #  edit яерез ?edit=id
-    edit_comment_id = request.GET.get("edit")
-    try:
-        edit_comment_id = int(edit_comment_id)
-    except (TypeError, ValueError):
-        edit_comment_id = None
-
-    return render(request, "appeals/detail.html", {
-        "appeal": appeal,
-        "form": form,
-        "edit_comment_id": edit_comment_id,
-    })
+    return render(request, "appeals/adminpanel.html", {"appeals": appeals, "q": q})

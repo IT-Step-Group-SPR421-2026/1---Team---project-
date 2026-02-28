@@ -3,8 +3,22 @@
 
 {% block content %}
 <div class="bg-dark rounded-4 p-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
     <h2 class="mb-0 fw-semibold">Appeals</h2>
+
+    <form method="get" class="d-flex gap-2" style="max-width: 520px; width: 100%;">
+      <input type="text" name="q" class="form-control form-control-sm" placeholder="Search tickets..."
+        value="{{ q|default:'' }}" />
+      <button class="btn btn-sm btn-outline-light rounded-pill px-3" type="submit">
+        Search
+      </button>
+
+      {% if q %}
+      <a class="btn btn-sm btn-outline-secondary rounded-pill px-3" href="{% url 'appeals:appeals_adminpanel' %}">
+        Clear
+      </a>
+      {% endif %}
+    </form>
   </div>
 
   <div class="table-responsive">
@@ -13,6 +27,7 @@
         <tr class="text-secondary small text-uppercase">
           <th>#</th>
           <th>Title</th>
+          <th>Author</th>
           <th>Category</th>
           <th>Status</th>
           <th>Created</th>
@@ -27,6 +42,13 @@
           <td class="fw-semibold">
             {{ appeal.title }}
           </td>
+
+          <td>
+            {% if appeal.author %}
+            {{ appeal.author.username }}
+            {% else %}
+            <span class="text-secondary">Unknown</span>
+            {% endif %}
 
           <td class="text-secondary">
             {{ appeal.get_category_display }}
