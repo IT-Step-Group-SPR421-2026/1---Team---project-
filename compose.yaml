@@ -1,8 +1,0 @@
-services:
-  1teamproject:
-    image: helpdesk
-    build:
-      context: .
-      dockerfile: docker/Dockerfile  
-    ports:
-      - "8000:8000"
