@@ -265,6 +265,7 @@ pyrightconfig.json
 
 ### VisualStudioCode ###
 .vscode/*
+.vscode
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -311,6 +312,7 @@ $RECYCLE.BIN/
 venv/
 ENV/
 .env
+
 
 #  (SQLite)
 *.sqlite3
