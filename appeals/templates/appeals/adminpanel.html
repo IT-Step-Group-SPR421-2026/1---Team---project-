@@ -13,6 +13,7 @@
         <tr class="text-secondary small text-uppercase">
           <th>#</th>
           <th>Title</th>
+          <th>Author</th>
           <th>Category</th>
           <th>Status</th>
           <th>Created</th>
@@ -27,6 +28,13 @@
           <td class="fw-semibold">
             {{ appeal.title }}
           </td>
+
+          <td>
+            {% if appeal.author %}
+            {{ appeal.author.username }}
+            {% else %}
+            <span class="text-secondary">Unknown</span>
+            {% endif %}
 
           <td class="text-secondary">
             {{ appeal.get_category_display }}

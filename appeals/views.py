@@ -15,7 +15,9 @@ def appeal_create(request):
     if request.method == "POST":
         appeal_form = AppealForm(request.POST, request.FILES)
         if appeal_form.is_valid():
-            appeal_form.save()
+            appeal = appeal_form.save(commit=False)
+            appeal.author = request.user
+            appeal.save()
             return redirect("/appeals/adminpanel")
     else:
         appeal_form = AppealForm()
@@ -62,7 +64,7 @@ def appeal_detail(request, pk):
             comment = form.save(commit=False)
             comment.appeal = appeal
             comment.save()
-            return redirect("appeal_detail", pk=appeal.pk)
+            return redirect("appeals:appeal_detail", pk=appeal.pk)
     else:
         form = CommentForm()
 
