@@ -15,7 +15,7 @@ def index(request):
 @login_required
 def assign_ticket(request, pk):
     if not request.user.is_staff:
-        return redirect("index")  # тільки адміни
+        return redirect("index")
 
     appeal = get_object_or_404(Appeal, pk=pk)
 
