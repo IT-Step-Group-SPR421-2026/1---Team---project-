@@ -86,32 +86,22 @@ WSGI_APPLICATION = 'HelpDesk.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-raw_db_url = os.getenv('DATABASE_URL', '')
+B_URL = os.getenv('DATABASE_URL', '')
 
-
-DATABASE_URL = raw_db_url.strip().replace('"', '').replace("'", "")
-
-if DATABASE_URL and DATABASE_URL.startswith('postgresql://'):
-   
-    db_config = dj_database_url.parse(DATABASE_URL)
-   
-    db_config['PASSWORD'] = unquote(db_config.get('PASSWORD', ''))
-    
-    DATABASES = {
-        'default': db_config
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres.qhzcdapzeeleukebuzvd',
+        'PASSWORD': 'a#5ebh4TEaphhc/',  # Ваш пароль у чистому вигляді
+        'HOST': 'aws-1-eu-west-1.pooler.supabase.com',
+        'PORT': '6543',
     }
-    DATABASES['default']['CONN_MAX_AGE'] = 600
-    print(" Supabase connected.")
-else:
-   
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-    print("error")
+}
 
+# Перевірка підключення для консолі
+if DATABASES['default']['PASSWORD']:
+    print("🚀 СУПЕР! База підключена напряму через параметри!")
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
