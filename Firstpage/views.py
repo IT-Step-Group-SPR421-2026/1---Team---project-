@@ -1,3 +1,5 @@
+from urllib import request
+
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Appeal
 from appeals.models import Appeal
@@ -8,10 +10,23 @@ from .forms import AssignAdminForm
 def index(request):
     # if request.user.is_staff:
     appeals = Appeal.objects.all().order_by("-created_at")
+
+    filter_text = request.GET.get("filter_text", "")
+    category_filter = request.GET.get("category")
+
+    if filter_text:
+        appeals = appeals.filter(name__icontains=filter_text)   
+    
+    if category_filter:
+        appeals = appeals.filter(category=category_filter)
     # else:
     #     appeals = Appeal.objects.filter(author=request.user).order_by("-created_at")
 
-    return render(request, "Firstpage/first.html", {"appeals": appeals})
+    return render(request, "Firstpage/first.html", {
+        "appeals": appeals,
+        "categories": Appeal.CATEGIRY_CHOICES,
+        "selected_category": category_filter
+    })
 
 @login_required
 def assign_ticket(request, pk):
@@ -28,4 +43,7 @@ def assign_ticket(request, pk):
     else:
         form = AssignAdminForm(instance=appeal)
 
-    return render(request, "Firstpage/assign_ticket.html", {"form": form, "appeal": appeal})
+    return render(request, "Firstpage/assign_ticket.html", {
+        "form": form, 
+        "appeal": appeal
+    })
