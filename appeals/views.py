@@ -12,8 +12,26 @@ from django.contrib import messages
 @login_required
 def admin_panel(request):
     appeals = Appeal.objects.all().order_by("-created_at")
-    return render(request, "appeals/adminpanel.html", {"appeals": appeals})
+    categories = Appeal.CATEGIRY_CHOICES
+    selected_category = request.GET.get("category", "")
+    q = request.GET.get("q", "")
 
+    if selected_category:
+        appeals = appeals.filter(category=selected_category)
+    
+    if q:
+        appeals = appeals.filter(
+            Q(title__icontains=q) | 
+            Q(description__icontains=q) | 
+            Q(author__username__icontains=q)
+        )
+
+    return render(request, "appeals/adminpanel.html", {
+        "appeals": appeals,
+        "categories": categories,
+        "selected_category": selected_category,
+        "q": q
+    })
 @login_required
 def appeal_create(request):
     if request.method == "POST":
