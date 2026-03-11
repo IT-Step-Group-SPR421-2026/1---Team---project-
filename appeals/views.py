@@ -7,6 +7,7 @@ from appeals.forms import AppealForm
 from appeals.forms import CommentForm
 from .models import Appeal, Comment
 from django.views.decorators.http import require_POST
+from django.contrib import messages
 
 @login_required
 def admin_panel(request):
@@ -21,6 +22,7 @@ def appeal_create(request):
             appeal = appeal_form.save(commit=False)
             appeal.author = request.user
             appeal.save()
+            messages.success(request, "Appeal created successfully.")
             return redirect("/appeals/adminpanel")
     else:
         appeal_form = AppealForm()
@@ -34,6 +36,7 @@ def appeal_update(request, pk):
         appeal_form = AppealForm(request.POST, request.FILES, instance=appeal)
         if appeal_form.is_valid():
             appeal_form.save()
+            messages.success(request, "Appeal updated successfully.")
             return redirect("/appeals/adminpanel")
     else:
         appeal_form = AppealForm(instance=appeal)
@@ -44,6 +47,7 @@ def appeal_update(request, pk):
 def appeal_delete(request, pk):
     appeal = get_object_or_404(Appeal, pk=pk)
     appeal.delete()
+    messages.warning(request, "Appeal deleted successfully.")
     return redirect("/appeals/adminpanel")
 
 @login_required
