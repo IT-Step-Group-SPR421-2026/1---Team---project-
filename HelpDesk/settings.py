@@ -74,12 +74,30 @@ WSGI_APPLICATION = 'HelpDesk.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+
+
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres.qhzcdapzeeleukebuzvd',
+        'PASSWORD': 'a#5ebh4TEaphhc/',  
+        'HOST': 'aws-1-eu-west-1.pooler.supabase.com',
+        'PORT': '6543',
     }
 }
+
+# Перевірка підключення для консолі
+if DATABASES['default']['PASSWORD']:
+    print("supabase connection success")
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # Password validation

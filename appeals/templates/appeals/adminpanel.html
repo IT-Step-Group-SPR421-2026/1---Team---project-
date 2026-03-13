@@ -33,7 +33,7 @@
           </td>
 
           <td>
-            <select data-url="/appeals/status/{{ appeal.pk }}/" class="form-select form-select-sm status-select">
+            <select data-url="/appeals/status/{{ appeal.pk }}/" class="form-select form-select-sm status-select status-{{ appeal.status }}">
               {% for value, label in appeal.Status.choices %}
               <option value="{{ value }}" {% if appeal.status == value %}selected{% endif %}>
                 {{ label }}
@@ -51,7 +51,8 @@
               View
             </a>
 
-            <a class="btn btn-sm btn-danger rounded-pill" href="{% url 'appeals:appeal_delete' appeal.pk %}">
+            <a class="btn btn-sm btn-danger rounded-pill" href="{% url 'appeals:appeal_delete' appeal.pk %}"
+              onclick="return confirm('Are you sure you want to delete this appeal?')">
               Delete
             </a>
           </td>
@@ -68,5 +69,28 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+document.querySelectorAll('.status-select').forEach(select => {
+  select.addEventListener('change', function () {
+    const url = this.dataset.url;
+    const value = this.value;
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: `status=${value}`
+    }).then(() => {
+      this.className = `form-select form-select-sm status-select status-${value}`;
+    });
+  });
+});
+</script>
 
+<style>
+.status-not_reviewed { background-color: rgb(255, 255, 255); color: #000000; }
+.status-considered { background-color: rgba(185, 162, 30, 0.226); color: #ffc107; }
+.status-rejected { background-color: rgba(211, 15, 15, 0.151); color: #a82a32; }
+</style>
 {% endblock %}
