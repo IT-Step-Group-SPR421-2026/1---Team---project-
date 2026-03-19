@@ -7,8 +7,7 @@ from django.http import HttpResponse
 from appeals.models import Appeal, Comment, AdminLog
 from appeals.forms import AppealForm, CommentForm
 from django.views.decorators.http import require_POST
-from django.core.paginator import Paginator
-from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib import messages
 
 @login_required
 def dashboard(request):
@@ -35,31 +34,26 @@ def admin_panel(request):
   
     q = request.GET.get("q", "").strip()
     appeals = Appeal.objects.all().order_by("-created_at")
+    categories = Appeal.CATEGIRY_CHOICES
+    selected_category = request.GET.get("category", "")
+    q = request.GET.get("q", "")
 
+    if selected_category:
+        appeals = appeals.filter(category=selected_category)
+    
     if q:
         appeals = appeals.filter(
-            Q(title__icontains=q) |
-            Q(description__icontains=q) |
-            Q(category__icontains=q) |
-            Q(status__icontains=q) |
+            Q(title__icontains=q) | 
+            Q(description__icontains=q) | 
             Q(author__username__icontains=q)
-        ).distinct()
-
-    paginator = Paginator(appeals, 10)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    status_stats = Appeal.objects.values('status').annotate(count=Count('id'))
-    user_stats = Appeal.objects.values('author__username').annotate(count=Count('id'))
+        )
 
     return render(request, "appeals/adminpanel.html", {
-        "appeals": page_obj,
-        "q": q,
-        "page_obj": page_obj,
-        "status_stats": status_stats,
-        "user_stats": user_stats
+        "appeals": appeals,
+        "categories": categories,
+        "selected_category": selected_category,
+        "q": q
     })
-
 @login_required
 def appeal_create(request):
     if request.method == "POST":
@@ -68,14 +62,7 @@ def appeal_create(request):
             appeal = appeal_form.save(commit=False)
             appeal.author = request.user
             appeal.save()
-
-            AdminLog.objects.create(
-                admin=request.user,
-                appeal=appeal,
-                action="create",
-                message=f"Created ticket: {appeal.title}"
-           )
-
+            messages.success(request, "Appeal created successfully.")
             return redirect("/appeals/adminpanel")
     else:
         appeal_form = AppealForm()
@@ -87,15 +74,8 @@ def appeal_update(request, pk):
     if request.method == "POST":
         appeal_form = AppealForm(request.POST, request.FILES, instance=appeal)
         if appeal_form.is_valid():
-            updated_appeal = appeal_form.save()
-
-            AdminLog.objects.create(
-                admin=request.user,
-                appeal=updated_appeal,
-                action="update",
-                message=f"Updated ticket: {updated_appeal.title}"
-           )
-
+            appeal_form.save()
+            messages.success(request, "Appeal updated successfully.")
             return redirect("/appeals/adminpanel")
     else:
         appeal_form = AppealForm(instance=appeal)
@@ -114,6 +94,7 @@ def appeal_delete(request, pk):
     )
 
     appeal.delete()
+    messages.warning(request, "Appeal deleted successfully.")
     return redirect("/appeals/adminpanel")
 
 @login_required
