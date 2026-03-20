@@ -6,8 +6,18 @@
   <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
     <h2 class="mb-0 fw-semibold">Appeals</h2>
     <form method="get" class="d-flex gap-2" style="max-width: 520px; width: 100%;">
-      <input type="text" name="q" class="form-control form-control-sm" placeholder="Search tickets..." value="{{ q|default:'' }}" />
-      <button class="btn btn-sm btn-outline-light rounded-pill px-3" type="submit">Search</button>
+      <input type="text" name="q" class="form-control form-control-sm" placeholder="Search tickets..."
+        value="{{ q|default:'' }}" />
+      <select name="category" class="form-select form-select-sm" style="max-width: 150px;" onchange="this.form.submit()">
+        <option value="">All Categories</option>
+        {% for value, label in categories %}
+          <option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <button class="btn btn-sm btn-outline-light rounded-pill px-3" type="submit">
+        Search
+      </button>
+
       {% if q %}
       <a class="btn btn-sm btn-outline-secondary rounded-pill px-3" href="{% url 'appeals:appeals_adminpanel' %}">Clear</a>
       {% endif %}

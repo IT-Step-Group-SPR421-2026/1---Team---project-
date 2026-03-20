@@ -58,6 +58,29 @@
     padding: 4rem;
     text-align: center;
   }
+
+  .category-filter {
+    background: rgba(30, 39, 50, 0.5);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #fff;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .category-filter:focus {
+    background: rgba(40, 50, 65, 0.8);
+    border-color: rgba(13, 110, 253, 0.4);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    color: #fff;
+  }
+
+  .category-filter option {
+    background: rgba(30, 39, 50, 0.9);
+    color: #fff;
+  }
 </style>
 {% endblock %}
 
@@ -69,18 +92,29 @@
       </div>
     </header>
 
-    <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+    <div class="d-flex justify-content-between align-items-center mb-4 px-2 flex-wrap gap-3">
       <h2 class="h4 mb-0 fw-semibold">Recent requests</h2>
-      <a 
-        class="btn btn-danger-custom rounded-pill px-4 py-2 fw-bold"
-        href="/appeals/create/">
-        + New appeal
-      </a>
+      
+      <div class="d-flex align-items-center gap-3">
+        <select id="categoryFilter" class="form-select form-select-sm category-filter">
+          <option value="">All Categories</option>
+          <option value="technical_issue">Technical Issue</option>
+          <option value="billing_issue">Billing Issue</option>
+          <option value="account_issue">Account Issue</option>
+          <option value="other">Other</option>
+        </select>
+        
+        <a 
+          class="btn btn-danger-custom rounded-pill px-4 py-2 fw-bold"
+          href="/appeals/create/">
+          + New appeal
+        </a>
+      </div>
     </div>
 
-    <div class="row g-4">
+    <div class="row g-4" id="appealsContainer">
         {% for appeal in appeals %}
-        <div class="col-md-6 col-lg-4">
+        <div class="col-md-6 col-lg-4 appeal-item" data-category="{{ appeal.category }}">
           <a href="/appeals/detail/{{ appeal.pk }}/" class="text-decoration-none" >
           <div class="card h-100 appeal-card">
             <div class="card-body d-flex flex-column p-4">
@@ -100,6 +134,9 @@
                   </small>
                 </p>
                 <a href="/appeals/update/{{ appeal.pk }}/" class="btn btn-sm btn-outline-light w-100 rounded-pill">Edit Details</a>
+                <div class="mt-2 text-secondary small">
+                <i class="bi bi-chat"></i> {{ appeal.comments.count }} comments
+                </div>
               </div>
               </a>
             </div>
@@ -114,4 +151,38 @@
         </div>
         {% endfor %}
       </div>
+
+<script>
+  // Category filter functionality
+  const categoryFilter = document.getElementById('categoryFilter');
+  const appealsContainer = document.getElementById('appealsContainer');
+  const appealItems = document.querySelectorAll('.appeal-item');
+  const emptyState = appealsContainer.querySelector('.empty-state');
+
+  categoryFilter.addEventListener('change', function() {
+    const selectedCategory = this.value;
+    let visibleCount = 0;
+
+    appealItems.forEach(item => {
+      const itemCategory = item.getAttribute('data-category');
+      
+      if (selectedCategory === '' || itemCategory === selectedCategory) {
+        item.style.display = '';
+        visibleCount++;
+      } else {
+        item.style.display = 'none';
+      }
+    });
+
+    // Show/hide empty state message
+    const emptyStateMsg = appealsContainer.querySelector('.col-12.appeal-item');
+    if (emptyStateMsg) {
+      if (visibleCount === 0) {
+        emptyStateMsg.style.display = '';
+      } else {
+        emptyStateMsg.style.display = 'none';
+      }
+    }
+  });
+</script>
 {% endblock %}

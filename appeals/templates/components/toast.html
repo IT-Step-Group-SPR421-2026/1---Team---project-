@@ -1,0 +1,56 @@
+{% if messages %}
+<div class="toast-container position-fixed top-0 end-0 p-3">
+
+{% for msg in messages %}
+<div
+  class="toast bg-black text-success border border-success shadow rounded-0 font-monospace"
+  id="toast{{ forloop.counter }}"
+  role="alert"
+  aria-live="assertive"
+  aria-atomic="true"
+  data-bs-delay="5000"
+>
+
+  <div class="toast-header bg-black text-success border-bottom border-success font-monospace">
+
+    {% if msg.tags == "success" %}
+      <span class="me-2">[OK]</span>
+    {% elif msg.tags == "error" %}
+      <span class="me-2 text-danger">[ERROR]</span>
+    {% elif msg.tags == "warning" %}
+      <span class="me-2 text-warning">[WARN]</span>
+    {% else %}
+      <span class="me-2">[INFO]</span>
+    {% endif %}
+
+    <strong class="me-auto">SYSTEM</strong>
+
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      data-bs-dismiss="toast"
+    ></button>
+  </div>
+
+  <div class="toast-body">
+    > {{ msg }}
+  </div>
+
+</div>
+{% endfor %}
+
+</div>
+
+{% block scripts %}
+<script>
+window.onload = () => {
+  const toastList = document.querySelectorAll('.toast');
+  toastList.forEach(t => {
+    const toast = new bootstrap.Toast(t);
+    toast.show();
+  });
+};
+</script>
+{% endblock %}
+
+{% endif %}
