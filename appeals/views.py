@@ -8,6 +8,7 @@ from appeals.models import Appeal, Comment, AdminLog
 from appeals.forms import AppealForm, CommentForm
 from django.views.decorators.http import require_POST
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 
 @login_required
 def dashboard(request):
